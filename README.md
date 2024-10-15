@@ -1,73 +1,69 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Minha Biblioteca API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este projeto é uma API para gerenciar uma biblioteca pessoal, protegida por autenticação JWT e documentada com Swagger.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Requisitos
 
-## Description
+- Node.js v20
+- PostgreSQL
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Instalação
 
-## Installation
+1. Instale as dependências:
 
-```bash
-$ yarn install
-```
+   ```bash
+   npm install
+   ```
 
-## Running the app
+2. Configure o banco de dados:
 
-```bash
-# development
-$ yarn run start
+   - Crie um banco de dados PostgreSQL.
+   - Copie o arquivo `.env.example` e renomeie para `.env`, caso necessário, altere as variáveis de ambiente.
 
-# watch mode
-$ yarn run start:dev
+3. Execute as migrações para criar as tabelas no banco de dados:
 
-# production mode
-$ yarn run start:prod
-```
+   ```bash
+   yarn migration:up
+   ```
 
-## Test
+## Uso
 
-```bash
-# unit tests
-$ yarn run test
+1. Inicie o servidor:
 
-# e2e tests
-$ yarn run test:e2e
+   ```bash
+   yarn start:dev
+   ```
 
-# test coverage
-$ yarn run test:cov
-```
+2. Acesse a documentação da API no Swagger:
 
-## Support
+   - Abra o navegador e vá para `http://localhost:3000/docs`.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Decisões Tecnológicas
 
-## Stay in touch
+- **NestJS**: Escolhido por sua arquitetura modular e suporte para TypeScript, facilitando a escalabilidade e manutenção do projeto.
+- **MikroORM**: Utilizado como ORM por sua integração com NestJS e suporte a PostgreSQL, permitindo um mapeamento de objetos para o banco de dados eficiente.
+- **JWT (JSON Web Tokens)**: Implementado para autenticação, garantindo que apenas usuários autenticados possam acessar certas rotas.
+- **Swagger**: Integrado para fornecer documentação interativa da API, facilitando o entendimento e teste das rotas disponíveis.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Requisições CRUD Autenticadas
 
-## License
+Para realizar requisições CRUD autenticadas, siga os passos abaixo:
 
-Nest is [MIT licensed](LICENSE).
+1. **Autenticação**:
+
+   - Use a rota `/auth/login` para autenticar um usuário. Envie um POST request com o corpo contendo `email` e `senha`.
+   - Exemplo de corpo de requisição:
+     ```json
+     {
+       "email": "exemplo@gmail.com",
+       "senha": "123456"
+     }
+     ```
+   - A resposta incluirá um `access_token` que deve ser usado para autenticar requisições subsequentes.
+
+2. **Usar o Token JWT**:
+   - Inclua o token JWT no cabeçalho `Authorization` das suas requisições CRUD.
+   - Exemplo de cabeçalho:
+     ```
+     Authorization: Bearer <seu_token_jwt>
+     ```
