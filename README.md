@@ -38,6 +38,22 @@ Este projeto é uma API para gerenciar uma biblioteca pessoal, protegida por aut
 
    - Abra o navegador e vá para `http://localhost:3000/docs`.
 
+## Criação de Usuário
+
+Antes de realizar operações autenticadas, você precisa criar um usuário:
+
+1. Envie uma requisição POST para `/usuarios` com o seguinte corpo:
+
+   ```json
+   {
+     "nome": "Seu Nome",
+     "email": "exemplo@gmail.com",
+     "senha": "123456"
+   }
+   ```
+
+2. Após a criação, você poderá autenticar o usuário e realizar operações CRUD autenticadas.
+
 ## Decisões Tecnológicas
 
 - **NestJS**: Escolhido por sua arquitetura modular e suporte para TypeScript, facilitando a escalabilidade e manutenção do projeto.
