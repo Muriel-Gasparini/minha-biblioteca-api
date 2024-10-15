@@ -1,26 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLivroDto } from './dto/create-livro.dto';
 import { UpdateLivroDto } from './dto/update-livro.dto';
+import { Livro } from './entities/livro.entity';
+import { EntityRepository } from '@mikro-orm/core';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityManager } from '@mikro-orm/core';
 
 @Injectable()
 export class LivrosService {
-  create(createLivroDto: CreateLivroDto) {
-    return 'This action adds a new livro';
+  constructor(
+    @InjectRepository(Livro)
+    private readonly livroRepository: EntityRepository<Livro>,
+    private readonly em: EntityManager,
+  ) {}
+
+  async create(createLivroDto: CreateLivroDto) {
+    const livro = this.em.create(Livro, createLivroDto);
+    await this.em.persistAndFlush(livro);
   }
 
-  findAll() {
-    return `This action returns all livros`;
+  async findAll() {
+    return this.livroRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} livro`;
+  async findOne(id: number) {
+    const livro = await this.em.findOne(Livro, id);
+    if (!livro) {
+      throw new NotFoundException(`Livro com ID ${id} não encontrado`);
+    }
+    return livro;
   }
 
-  update(id: number, updateLivroDto: UpdateLivroDto) {
-    return `This action updates a #${id} livro`;
+  async update(id: number, updateLivroDto: UpdateLivroDto) {
+    const livro = await this.findOne(id);
+    this.em.assign(livro, updateLivroDto);
+    await this.em.flush();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} livro`;
+  async remove(id: number): Promise<void> {
+    const livro = await this.findOne(id);
+    await this.em.removeAndFlush(livro);
   }
 }
