@@ -1,26 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
-import { UpdateUsuarioDto } from './dto/update-usuario.dto';
-
+import { Usuario } from './entities/usuario.entity';
+import { EntityRepository } from '@mikro-orm/core';
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsuariosService {
-  create(createUsuarioDto: CreateUsuarioDto) {
-    return 'This action adds a new usuario';
+  constructor(private readonly usuarioRepository: EntityRepository<Usuario>) {}
+
+  async create(createUsuarioDto: CreateUsuarioDto) {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(createUsuarioDto.senha, salt);
+    const usuario = this.usuarioRepository.create({
+      ...createUsuarioDto,
+      senha: hashedPassword,
+    });
+    return await this.usuarioRepository.insert(usuario);
   }
 
-  findAll() {
-    return `This action returns all usuarios`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} usuario`;
-  }
-
-  update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-    return `This action updates a #${id} usuario`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} usuario`;
+  async findOneByEmail(email: string): Promise<Usuario | null> {
+    return this.usuarioRepository.findOne({ email });
   }
 }
