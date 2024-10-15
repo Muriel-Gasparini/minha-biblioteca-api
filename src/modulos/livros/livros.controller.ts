@@ -7,11 +7,17 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { LivrosService } from './livros.service';
 import { CreateLivroDto } from './dto/create-livro.dto';
 import { UpdateLivroDto } from './dto/update-livro.dto';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Livros')
@@ -22,27 +28,46 @@ export class LivrosController {
   constructor(private readonly livrosService: LivrosService) {}
 
   @Post()
-  create(@Body() createLivroDto: CreateLivroDto) {
-    return this.livrosService.create(createLivroDto);
+  @ApiOperation({ summary: 'Cria um novo livro' })
+  @ApiResponse({ status: 201, description: 'Livro criado com sucesso' })
+  @ApiResponse({ status: 400, description: 'Verifique os dados enviados' })
+  create(@Body() createLivroDto: CreateLivroDto, @Request() req) {
+    return this.livrosService.create(createLivroDto, req.user.id);
   }
 
   @Get()
-  findAll() {
-    return this.livrosService.findAll();
+  @ApiOperation({ summary: 'Busca todos os livros do usuário' })
+  @ApiResponse({ status: 200, description: 'Lista de livros' })
+  findAll(@Request() req) {
+    return this.livrosService.findAll(req.user.id);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.livrosService.findOne(+id);
+  @ApiOperation({ summary: 'Busca um livro pelo ID' })
+  @ApiResponse({ status: 200, description: 'Livro encontrado' })
+  @ApiResponse({ status: 404, description: 'Livro não encontrado' })
+  findOne(@Param('id') id: string, @Request() req) {
+    return this.livrosService.findOne(+id, req.user.id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLivroDto: UpdateLivroDto) {
-    return this.livrosService.update(+id, updateLivroDto);
+  @ApiOperation({ summary: 'Atualiza um livro pelo ID' })
+  @ApiResponse({ status: 200, description: 'Livro atualizado com sucesso' })
+  @ApiResponse({ status: 404, description: 'Livro não encontrado' })
+  @ApiResponse({ status: 400, description: 'Verifique os dados enviados' })
+  update(
+    @Param('id') id: string,
+    @Body() updateLivroDto: UpdateLivroDto,
+    @Request() req,
+  ) {
+    return this.livrosService.update(+id, updateLivroDto, req.user.id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.livrosService.remove(+id);
+  @ApiOperation({ summary: 'Remove um livro pelo ID' })
+  @ApiResponse({ status: 200, description: 'Livro removido com sucesso' })
+  @ApiResponse({ status: 404, description: 'Livro não encontrado' })
+  remove(@Param('id') id: string, @Request() req) {
+    return this.livrosService.remove(+id, req.user.id);
   }
 }

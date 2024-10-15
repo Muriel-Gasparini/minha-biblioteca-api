@@ -34,4 +34,8 @@ export class UsuariosService {
   async findOneByEmail(email: string) {
     return this.usuarioRepository.findOne({ email });
   }
+
+  async findOneById(id: number) {
+    return this.usuarioRepository.findOne({ id });
+  }
 }

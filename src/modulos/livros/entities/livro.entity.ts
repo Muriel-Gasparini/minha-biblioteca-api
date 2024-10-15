@@ -1,5 +1,6 @@
-import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { StatusLeitura } from './livro-status.enum';
+import { Usuario } from '../../usuarios/entities/usuario.entity';
 
 @Entity()
 export class Livro {
@@ -23,4 +24,7 @@ export class Livro {
     default: StatusLeitura.NAO_LIDO,
   })
   statusLeitura!: StatusLeitura;
+
+  @ManyToOne()
+  usuario!: Usuario;
 }
