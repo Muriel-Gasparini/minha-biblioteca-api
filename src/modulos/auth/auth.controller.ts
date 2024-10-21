@@ -5,10 +5,18 @@ import {
   Post,
   Request,
   UseGuards,
+  Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
-import { ApiResponse, ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import {
+  ApiResponse,
+  ApiOperation,
+  ApiTags,
+  ApiBody,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { LoginAuthDto } from './dto/login.dto';
 
 @ApiTags('Autenticação')
@@ -22,8 +30,18 @@ export class AuthController {
   @ApiOperation({ summary: 'Login de usuário' })
   @ApiBody({ type: LoginAuthDto })
   @ApiResponse({ status: 200, description: 'Login efetuado com sucesso' })
-  @ApiResponse({ status: 401, description: 'Usuário ou senha inválidos' })
+  @ApiResponse({ status: 400, description: 'Email ou senha inválidos' })
   async login(@Request() req) {
     return this.authService.login(req.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obter informações do usuário logado' })
+  @ApiResponse({ status: 200, description: 'Informações do usuário logado' })
+  @ApiResponse({ status: 401, description: 'Não autorizado' })
+  getMe(@Request() req) {
+    return req.user;
   }
 }

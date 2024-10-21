@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { LivrosService } from './livros.service';
 import { CreateLivroDto } from './dto/create-livro.dto';
@@ -19,6 +20,7 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { LivroQueryParamsDto } from './dto/livro-query-params.dto';
 
 @ApiTags('Livros')
 @ApiBearerAuth()
@@ -38,8 +40,8 @@ export class LivrosController {
   @Get()
   @ApiOperation({ summary: 'Busca todos os livros do usuário' })
   @ApiResponse({ status: 200, description: 'Lista de livros' })
-  findAll(@Request() req) {
-    return this.livrosService.findAll(req.user.id);
+  findAll(@Request() req, @Query() query: LivroQueryParamsDto) {
+    return this.livrosService.findAll(req.user.id, query);
   }
 
   @Get(':id')

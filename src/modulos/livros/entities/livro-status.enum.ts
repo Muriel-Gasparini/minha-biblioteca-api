@@ -1,4 +1,4 @@
 export enum StatusLeitura {
-  LIDO = 'lido',
-  NAO_LIDO = 'nao lido',
+  LIDO = 'LIDO',
+  NAO_LIDO = 'NAO_LIDO',
 }

@@ -2,10 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLivroDto } from './dto/create-livro.dto';
 import { UpdateLivroDto } from './dto/update-livro.dto';
 import { Livro } from './entities/livro.entity';
-import { EntityRepository } from '@mikro-orm/core';
+import { EntityRepository, FilterQuery } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityManager } from '@mikro-orm/core';
 import { UsuariosService } from '../usuarios/usuarios.service';
+import { LivroQueryParamsDto } from './dto/livro-query-params.dto';
 
 @Injectable()
 export class LivrosService {
@@ -22,8 +23,15 @@ export class LivrosService {
     await this.em.persistAndFlush(livro);
   }
 
-  async findAll(usuarioId: number) {
-    return this.livroRepository.find({ usuario: usuarioId });
+  async findAll(usuarioId: number, params?: LivroQueryParamsDto) {
+    const filters: FilterQuery<Livro> = { usuario: usuarioId };
+    if (params?.search) {
+      filters.$or = [
+        { titulo: { $ilike: `%${params.search}%` } },
+        { autor: { $ilike: `%${params.search}%` } },
+      ];
+    }
+    return this.livroRepository.find(filters, { orderBy: { id: 'DESC' } });
   }
 
   async findOne(id: number, usuarioId: number) {
