@@ -44,4 +44,11 @@ export class AuthController {
   getMe(@Request() req) {
     return req.user;
   }
+
+  @Get('ping')
+  @ApiOperation({ summary: 'Verificar se o servidor está funcionando' })
+  @ApiResponse({ status: 200, description: 'Servidor funcionando' })
+  ping() {
+    return { pong: true };
+  }
 }
